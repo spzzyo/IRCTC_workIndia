@@ -1,0 +1,70 @@
+<!-- signup.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <script>
+        async function handleSignup(event) {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData);  
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/users/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}',  
+                    },
+                    body: JSON.stringify(data), 
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    alert('Error: ' + JSON.stringify(errorData)); 
+                } else {
+                    const responseData = await response.json();
+                    alert('User created: ' + JSON.stringify(responseData)); 
+                    
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');  
+            }
+        }
+    </script>
+</head>
+<body>
+    <h2>Sign Up</h2>
+    <form id="signupForm" method="POST" onsubmit="handleSignup(event)">
+        {% csrf_token %}
+        <label for="first_name">First Name:</label>
+        <input type="text" id="first_name" name="first_name" required><br><br>
+
+        <label for="last_name">Last Name:</label>
+        <input type="text" id="last_name" name="last_name" required><br><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br><br>
+
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required><br><br>
+
+        <label for="user_type">User Type:</label>
+        <select id="user_type" name="user_type" required>
+            <option value="1">Admin</option>
+            <option value="2">User</option>
+        </select><br><br>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br><br>
+
+        <button type="submit">Sign Up</button>
+    </form>
+
+    <p>Already have an account? <a href="#">Sign In</a></p>
+</body>
+</html>
